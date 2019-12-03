@@ -41,6 +41,7 @@ const is_electron = process && process.versions && process.versions['electron'];
 
 class PushScreen extends Component {
   state = {
+    username: '',
     isPickingFile: false,
     isSending: false,
     messages: [],
@@ -56,7 +57,10 @@ class PushScreen extends Component {
 
   async componentDidMount() { 
     try {
-      this.username = await AsyncStorage.getItem('username');
+      const username = await AsyncStorage.getItem('username');
+      await this.setState({
+        username
+      });
     } catch (err) {
       this.props.navigation.navigate('LoadingScreen');
     } 
@@ -67,7 +71,7 @@ class PushScreen extends Component {
       encrypted: true,
     });
 
-    this.myChannel = this.pusher.subscribe(`private-${this.username}-channel`); 
+    this.myChannel = this.pusher.subscribe(`private-${this.state.username}-channel`); 
     this.myChannel.bind('client-push-message', async message => {
      
       const msg = this.getMessage(message);
@@ -80,23 +84,27 @@ class PushScreen extends Component {
 
 
   render() {
-    const {messages} = this.state;
+    const { username, messages } = this.state;
 
-    return (
-      <View style={styles.container}>
-        <GiftedChat
-          messages={messages}
-          onSend={messages => this.onSend(messages)}
-          user={{
-            _id: this.username, 
-          }}
-          renderActions={this.renderCustomActions}
-          renderSend={this.renderSend}
-          renderMessage={this.renderMessage}
-        />
-        <KeyboardAvoidingView behavior={ Platform.OS === 'android' ? 'padding' :  null} keyboardVerticalOffset={40}/>
-      </View>
-    );
+    if (username) {
+      return (
+        <View style={styles.container}>
+          <GiftedChat
+            messages={messages}
+            onSend={messages => this.onSend(messages)}
+            user={{
+              _id: username, 
+            }}
+            renderActions={this.renderCustomActions}
+            renderSend={this.renderSend}
+            renderMessage={this.renderMessage}
+          />
+          <KeyboardAvoidingView behavior={ Platform.OS === 'android' ? 'padding' :  null} keyboardVerticalOffset={40}/>
+        </View>
+      );
+    }
+
+    return null;
   }
   
 
@@ -265,12 +273,15 @@ class PushScreen extends Component {
 
 
   onSend = async ([message]) => {
+
+    const { username } = this.state;
+
     let messageData = {
       id: randomString(),
       text: message.text,
       sender: {
-        id: this.username,
-        name: this.username
+        id: username,
+        name: username
       }
     };
 
