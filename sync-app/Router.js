@@ -1,22 +1,29 @@
 import React, { Component } from 'react';
 
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { YellowBox } from 'react-native';
 
-import {createBottomTabNavigator} from 'react-navigation-tabs';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+
 import { FontAwesome } from '@expo/vector-icons';
 
 import LoginScreen from './src/screens/LoginScreen';
 import LoadingScreen from './src/screens/LoadingScreen';
 
 import PushScreen from './src/screens/PushScreen';
+import TextStack from './src/containers/TextStack';
+
+YellowBox.ignoreWarnings(['Setting a timer']);
 
 const iconNames = {
-  Push: 'paper-plane'
+  Push: 'paper-plane', 
+  Text: 'align-justify'
 };
 
 const TabNavigator = createBottomTabNavigator(
   {
     Push: PushScreen,
+    Text: TextStack
   },
 
   {
@@ -43,18 +50,22 @@ const RootStack = createSwitchNavigator(
   {
     LoadingScreen,
     LoginScreen,
-    TabContainer,
+    TabContainer
   },
   {
     initialRouteName: 'LoadingScreen',
   },
 );
 
-const MainAppContainer = createAppContainer(RootStack);
+import { withChannelContextProvider } from './src/context/ChannelContext';
+
+const MainAppContainer = withChannelContextProvider(createAppContainer(RootStack));
 
 class Router extends Component {
   render() {
-    return <MainAppContainer />;
+    return (
+      <MainAppContainer />
+    );
   }
 }
 

@@ -24,20 +24,12 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 
 import { 
-  CHANNELS_APP_KEY, 
-  CHANNELS_APP_CLUSTER, 
   IMGUR_APP_ID, 
-  NGROK_HTTPS_URL 
 } from 'react-native-dotenv';
 
-let Pusher = null;
-if (Platform.OS != 'web') {
-  Pusher = require('pusher-js/react-native');
-} else {
-  Pusher = require('pusher-js');
-}
+import isElectron from '../helpers/isElectron';
 
-const is_electron = process && process.versions && process.versions['electron'];
+import { ChannelContext } from '../context/ChannelContext';
 
 class PushScreen extends Component {
   state = {
@@ -51,9 +43,10 @@ class PushScreen extends Component {
   constructor(props) {
     super(props);
     this.attachment = null;
-    this.pusher = null;
+    this.channel = null;
   }
 
+  static contextType = ChannelContext;
 
   async componentDidMount() { 
     try {
@@ -65,21 +58,14 @@ class PushScreen extends Component {
       this.props.navigation.navigate('LoadingScreen');
     } 
 
-    this.pusher = new Pusher(CHANNELS_APP_KEY, {
-      authEndpoint: `${NGROK_HTTPS_URL}/pusher/auth`,
-      cluster: CHANNELS_APP_CLUSTER,
-      encrypted: true,
-    });
-
-    this.myChannel = this.pusher.subscribe(`private-${this.state.username}-channel`); 
-    this.myChannel.bind('client-push-message', async message => {
-     
-      const msg = this.getMessage(message);
-      
+    this.channel = this.context.connect();
+    this.channel.bind('client-push-message', async message => {
+      const msg = this.getMessage(message); 
       await this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, msg),
       }));
     });
+
   }
 
 
@@ -139,7 +125,7 @@ class PushScreen extends Component {
 
 
   downloadFile = (imageURI) => {   
-    if (is_electron) {
+    if (isElectron) {
       window.ipcRenderer.send("download-file", imageURI);
     } else if (Platform.OS == 'web') {
       window.open(imageURI); 
@@ -229,9 +215,7 @@ class PushScreen extends Component {
       });
 
     } catch (err) {
-      this.setState({
-        isPickingFile: false
-      });
+      console.log('err: ', err);
     }
   };
 
@@ -273,7 +257,7 @@ class PushScreen extends Component {
 
 
   onSend = async ([message]) => {
-
+    
     const { username } = this.state;
 
     let messageData = {
@@ -289,7 +273,7 @@ class PushScreen extends Component {
       messageData = Object.assign(messageData, { attachment: this.attachment });
     }
 
-    this.myChannel.trigger('client-push-message', messageData);
+    this.channel.trigger('client-push-message', messageData);
     const msg = this.getMessage(messageData);
    
     await this.setState(previousState => ({
