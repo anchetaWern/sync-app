@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   Platform,
   View,
-  Text,
   TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,

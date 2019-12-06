@@ -1,4 +1,4 @@
-import React, { Component, useContext } from 'react';
+import React, { Component } from 'react';
 import { 
   View, 
   Button, 
@@ -10,8 +10,6 @@ import {
 import ListItem from '../components/ListItem';
 import CreateText from '../components/CreateText';
 import isElectron from '../helpers/isElectron';
-
-const randomString = require('random-string');
 
 import Constants from 'expo-constants';
 import WebModal from 'modal-enhanced-react-native-web';
