@@ -8,7 +8,12 @@ import {
   StyleSheet
 } from 'react-native';
 
+import { ChannelContext } from '../context/ChannelContext'; 
+
 class LoginScreen extends Component {
+  
+  static contextType = ChannelContext;
+
   constructor(props) {
     super(props);
   }
@@ -57,6 +62,7 @@ class LoginScreen extends Component {
 
     if (username) {
       try {
+        this.context.setUsername(username);
         await AsyncStorage.setItem('username', username);
         this.props.navigation.navigate('TabContainer');
       } catch (err) {
