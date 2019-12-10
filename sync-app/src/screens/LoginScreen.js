@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View, 
   Text, 
@@ -9,6 +9,11 @@ import {
 } from 'react-native';
 
 import { ChannelContext } from '../context/ChannelContext'; 
+import axios from 'axios';
+
+import {
+  NGROK_HTTPS_URL
+} from 'react-native-dotenv';
 
 class LoginScreen extends Component {
   
@@ -20,12 +25,15 @@ class LoginScreen extends Component {
 
 
   state = {
-    username: "",
+    username: '',
+    roomID: '',
     isLoading: false
   }
 
 
   render() {
+    const { username, roomID, isLoading } = this.state;
+
     return (
       <View style={styles.wrapper}>
         <View style={styles.container}>
@@ -36,15 +44,24 @@ class LoginScreen extends Component {
               <TextInput
                 style={styles.textInput}
                 onChangeText={username => this.setState({ username })}
-                value={this.state.username}
+                value={username}
               />
             </View>
 
-            {!this.state.isLoading && (
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Enter your room ID</Text>
+              <TextInput
+                style={styles.textInput}
+                onChangeText={roomID => this.setState({ roomID })}
+                value={roomID}
+              />
+            </View>
+
+            {!isLoading && (
               <Button title="Login" color="#0064e1" onPress={this.login} />
             )}
 
-            {this.state.isLoading && (
+            {isLoading && (
               <Text style={styles.loadingText}>Loading...</Text>
             )}
           </View>
@@ -55,7 +72,8 @@ class LoginScreen extends Component {
 
 
   login = async () => {
-    const username = this.state.username;
+    const { username, roomID } = this.state;
+    
     this.setState({
       isLoading: true
     });
@@ -63,9 +81,20 @@ class LoginScreen extends Component {
     if (username) {
       try {
         this.context.setUsername(username);
-        await AsyncStorage.setItem('username', username);
+
+        const response = await axios.post(`${NGROK_HTTPS_URL}/chatkit/login`, { 
+          username, 
+          roomID 
+        });
+        const { user } = response.data;
+        
+        AsyncStorage.setItem('username', username);
+        AsyncStorage.setItem('roomID', roomID);
+        
         this.props.navigation.navigate('TabContainer');
+
       } catch (err) {
+        console.log('err: ', err);
         this.props.navigation.navigate('LoadingScreen');
       }
     }

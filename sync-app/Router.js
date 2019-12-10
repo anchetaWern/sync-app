@@ -12,18 +12,23 @@ import LoadingScreen from './src/screens/LoadingScreen';
 
 import PushScreen from './src/screens/PushScreen';
 import TextStack from './src/containers/TextStack';
+import ChatScreen from './src/screens/ChatScreen';
+
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 
 const iconNames = {
   Push: 'paper-plane', 
-  Text: 'align-justify'
+  Text: 'align-justify',
+  Chat: 'comment'
 };
 
 const TabNavigator = createBottomTabNavigator(
   {
+    Chat: ChatScreen,
+    Text: TextStack,
+    
     Push: PushScreen,
-    Text: TextStack
   },
 
   {
