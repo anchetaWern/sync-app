@@ -22,7 +22,7 @@ const Message = ({ item }) => {
 
       <View style={styles.messageContainer}>
         <View style={[styles.message, messageStyle]}>
-          <Text style={[styles.text, textStyle]}>{item.message}</Text>
+          <Text style={textStyle}>{item.message}</Text>
         </View>
       </View> 
     </View>
@@ -60,9 +60,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fa',
     alignSelf: 'flex-start',
     alignItems: 'flex-start',
-  },
-  text: {
-
   },
   currentUserText: {
     color: '#FFF'

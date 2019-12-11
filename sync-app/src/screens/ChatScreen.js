@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, AsyncStorage, KeyboardAvoidingView } from 'react-native';
+import { View, Text, AsyncStorage, KeyboardAvoidingView, StyleSheet } from 'react-native';
 import Chat from '../components/Chat';
 
 import ChatContext from '../context/ChatContext';
@@ -41,7 +41,7 @@ class ChatScreen extends Component {
 
 
   render() {
-    const { username, roomID, message } = this.state;
+    const { username, roomID } = this.state;
 
     if (username && roomID) {
       return (

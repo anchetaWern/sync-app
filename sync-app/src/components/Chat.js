@@ -12,7 +12,6 @@ class Chat extends Component {
   static contextType = ChatContext;
 
   state = {
-    isDialogVisible: false,
     message: '',
     messages: []
   }
@@ -20,7 +19,7 @@ class Chat extends Component {
 
   componentDidMount() {
    
-    const { username, roomID } = this.context;
+    const { roomID } = this.context;
     setTimeout(() => {
       if (this.props.chatkit.currentUser) {
         this.props.chatkit.currentUser.subscribeToRoomMultipart({
@@ -58,7 +57,7 @@ class Chat extends Component {
 
 
   render() {
-    const { isDialogVisible, message, messages } = this.state;
+    const { message, messages } = this.state;
     if (messages) {
       return (
         <View style={{ flex: 1 }}>
