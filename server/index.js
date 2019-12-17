@@ -4,6 +4,8 @@ const cors = require("cors");
 
 require("dotenv").config();
 
+const axios = require('axios');
+
 const Pusher = require('pusher');
 
 const Chatkit = require("@pusher/chatkit-server");
@@ -78,7 +80,38 @@ app.post('/chatkit/login', async (req, res) => {
   }
 });
 
+app.get('/search', async (req, res) => {
+  const { query } = req.query;
+  
+  try {
+    const response = await axios.get(
+      'https://listen-api.listennotes.com/api/v2/search',
+      {
+        headers: { 
+          'X-ListenAPI-Key': process.env.LISTENNOTES_API_KEY 
+        },
+        params: {
+          q: query,
+          type: 'episode'
+        }
+      }
+    );
+   
+    const data = response.data.results.map(({ id, audio, title_original, image }) => {
+      return {
+        id, 
+        audio,
+        title_original, 
+        image
+      }
+    });
 
+    return res.send(data);
+  } catch (err) {
+    console.log('err: ', err);
+    return res.send('error occurred');
+  }
+});
 
 const PORT = 5000;
 app.listen(PORT, (err) => {

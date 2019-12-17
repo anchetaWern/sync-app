@@ -13,6 +13,7 @@ import LoadingScreen from './src/screens/LoadingScreen';
 import PushScreen from './src/screens/PushScreen';
 import TextStack from './src/containers/TextStack';
 import ChatScreen from './src/screens/ChatScreen';
+import AudioStack from './src/containers/AudioStack';
 
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -20,14 +21,15 @@ YellowBox.ignoreWarnings(['Setting a timer']);
 const iconNames = {
   Push: 'paper-plane', 
   Text: 'align-justify',
-  Chat: 'comment'
+  Chat: 'comment',
+  Audio: 'music'
 };
 
 const TabNavigator = createBottomTabNavigator(
   {
+    Audio: AudioStack,
     Chat: ChatScreen,
     Text: TextStack,
-    
     Push: PushScreen,
   },
 
